@@ -5,5 +5,6 @@ object BuildPlugins {
 
     const val KOTLIN = "org.jetbrains.kotlin.android"
     const val KSP = "com.google.devtools.ksp"
+    const val KAPT = "kotlin-kapt"
     const val DAGGER_HILT = "dagger.hilt.android.plugin"
 }

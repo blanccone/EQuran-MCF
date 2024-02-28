@@ -65,14 +65,14 @@ fun DependencyHandler.releaseApi(dependencyNotation: String): Dependency? =
     add("releaseApi", dependencyNotation)
 
 /**
- * Adds a dependency to the `ksp` configuration.
+ * Adds a dependency to the `kapt` configuration.
  *
  * @param dependencyNotation name of dependency to add at specific configuration
  *
  * @return the dependency
  */
-fun DependencyHandler.ksp(dependencyNotation: String): Dependency? =
-    add("ksp", dependencyNotation)
+fun DependencyHandler.kapt(dependencyNotation: String): Dependency? =
+    add("kapt", dependencyNotation)
 
 /**
  * Adds a dependency to the `testImplementation` configuration.

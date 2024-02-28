@@ -2,13 +2,13 @@ package commons
 
 import BuildAndroidConfig
 import extensions.implementation
-import extensions.ksp
+import extensions.kapt
 import Libs
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
 
@@ -17,9 +17,7 @@ android {
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
-        applicationId = BuildAndroidConfig.APP_ID
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     compileOptions {
@@ -37,5 +35,5 @@ dependencies {
     implementation(Libs.COROUTINES)
     implementation(Libs.DAGGER_HILT)
 
-    ksp(Libs.DAGGER_HILT_COMPILER)
+    kapt(Libs.DAGGER_HILT_COMPILER)
 }

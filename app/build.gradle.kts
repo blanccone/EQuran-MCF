@@ -1,13 +1,20 @@
 import extensions.implementation
+import extensions.kapt
+import java.util.Properties
 
 plugins {
     id(BuildPlugins.ANDROID_APPLICATION)
     id(BuildPlugins.KOTLIN)
+    id(BuildPlugins.KAPT)
 }
 
 android {
     namespace = BuildAndroidConfig.APP_ID
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+
+    val endpointFile = file("../endpoint.properties")
+    val endpointProperties = Properties()
+    endpointProperties.load(endpointFile.inputStream())
 
     defaultConfig {
         applicationId = BuildAndroidConfig.APP_ID
@@ -18,6 +25,7 @@ android {
         versionName = BuildAndroidConfig.VERSION_NAME
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "${endpointProperties["BASE_URL"]}")
     }
 
     buildTypes {
@@ -49,5 +57,5 @@ dependencies {
     implementation(Libs.CORE_KTX)
     implementation(Libs.DAGGER_HILT)
 
-    ksp(Libs.DAGGER_HILT_COMPILER)
+    kapt(Libs.DAGGER_HILT_COMPILER)
 }
