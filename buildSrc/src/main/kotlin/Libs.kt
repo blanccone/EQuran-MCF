@@ -26,9 +26,9 @@ object Libs {
     const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.ROOM}"
 
     val LIFECYCLE = listOf(
-        "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.LIFECYCLE}",
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.LIFECYCLE}",
         "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE}",
+        "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.LIFECYCLE}",
         "com.github.hadilq.liveevent:liveevent:${Versions.LIVEEVENT}"
     )
 
@@ -43,7 +43,6 @@ object Libs {
         "androidx.appcompat:appcompat:${Versions.APPCOMPAT}",
         "com.google.android.material:material:${Versions.MATERIAL}",
         "androidx.constraintlayout:constraintlayout:${Versions.CONTRAINT_LAYOUT}",
-        "androidx.recyclerview:recyclerview:${Versions.RECYCLER_VIEW}",
-        "androidx.coordinatorlayout:coordinatorlayout:${Versions.COORDINATOR_LAYOUT}"
+        "androidx.recyclerview:recyclerview:${Versions.RECYCLER_VIEW}"
     )
 }
