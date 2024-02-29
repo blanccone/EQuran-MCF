@@ -1,8 +1,26 @@
 package com.blanccone.mimecloud.util
 
+import android.util.Base64
+import com.technicaltest.equranmcf.BuildConfig
+import java.io.UnsupportedEncodingException
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
 object Utils {
+    val apiURL: String
+        get() = decodeBase64(BuildConfig.BASE_URL)
+
+    fun decodeBase64(encoded: String): String {
+        val dataDec = Base64.decode(encoded, Base64.DEFAULT)
+        var decodedString = ""
+        try {
+            decodedString = String(dataDec, StandardCharsets.UTF_8)
+        } catch (e: UnsupportedEncodingException) {
+            e.printStackTrace()
+        } finally {
+            return decodedString
+        }
+    }
 
     fun generateUniqueId(inputString: String): Long {
         // Menggunakan SHA-256 sebagai contoh, bisa diganti dengan algoritma lain jika diinginkan

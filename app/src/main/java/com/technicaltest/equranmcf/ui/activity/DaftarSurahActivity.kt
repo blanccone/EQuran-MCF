@@ -69,7 +69,7 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
             ivBookmarks
 
             adapter.setOnItemClickListener {
-
+                DetailSurahActivity.newInstance(this@DaftarSurahActivity, it)
             }
         }
     }

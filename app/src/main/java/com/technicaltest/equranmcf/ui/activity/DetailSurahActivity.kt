@@ -2,13 +2,11 @@ package com.technicaltest.equranmcf.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
-import com.technicaltest.equranmcf.R
 import com.technicaltest.equranmcf.databinding.ActivityDetailSurah2Binding
 import com.technicaltest.equranmcf.ui.adapter.DaftarAyatAdapter
 import com.technicaltest.equranmcf.ui.viewmodel.EQuranViewModel

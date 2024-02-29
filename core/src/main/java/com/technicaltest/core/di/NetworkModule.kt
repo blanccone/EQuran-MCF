@@ -1,6 +1,7 @@
 package com.technicaltest.core.di
 
 import android.content.Context
+import com.blanccone.mimecloud.util.Utils
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.technicaltest.core.di.util.ConstDi
@@ -24,7 +25,7 @@ object NetworkModule {
 
     @Provides
     @Named(ConstDi.BASE_URL)
-    fun provideBaseUrl() = BuildConfig.BASE_URL
+    fun provideBaseUrl() = Utils.apiURL
 
     @Provides
     @Singleton

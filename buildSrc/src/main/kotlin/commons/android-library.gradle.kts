@@ -4,7 +4,6 @@ import BuildAndroidConfig
 import extensions.implementation
 import extensions.kapt
 import Libs
-import java.util.Properties
 
 plugins {
     id("com.android.library")
@@ -17,13 +16,8 @@ android {
     namespace = BuildAndroidConfig.APP_ID
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
-    val endpointFile = file("../endpoint.properties")
-    val endpointProperties = Properties()
-    endpointProperties.load(endpointFile.inputStream())
-
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        buildConfigField("String", "BASE_URL", "${endpointProperties["BASE_URL"]}")
     }
 
     buildTypes {
@@ -44,17 +38,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     buildFeatures {
         buildConfig = true
-        viewBinding = true
     }
 }
 

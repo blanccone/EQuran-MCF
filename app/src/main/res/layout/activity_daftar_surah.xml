@@ -118,22 +118,15 @@
 
     </androidx.cardview.widget.CardView>
 
-    <View
-        android:id="@+id/guideline"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@id/cvSearch"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSurah"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_daftar_surah"
-        android:paddingTop="60dp"
+        android:paddingTop="24dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toTopOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/llHeader"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
