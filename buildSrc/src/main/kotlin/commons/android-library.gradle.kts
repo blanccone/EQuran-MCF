@@ -20,6 +20,23 @@ android {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
     }
 
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -28,11 +45,13 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
-    implementation(Libs.CORE_KTX)
-    implementation(Libs.COROUTINES)
     implementation(Libs.DAGGER_HILT)
 
     kapt(Libs.DAGGER_HILT_COMPILER)

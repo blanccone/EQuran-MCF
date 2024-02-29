@@ -28,16 +28,22 @@ object Libs {
     val LIFECYCLE = listOf(
         "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.LIFECYCLE}",
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.LIFECYCLE}",
-        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE}"
+        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE}",
+        "com.github.hadilq.liveevent:liveevent:${Versions.LIVEEVENT}"
     )
 
     val UI_LAYER = listOf(
-        "androidx.activity:activity:${Versions.ACTIVITY_KTX}",
-        "androidx.fragment:fragment:${Versions.FRAGMENT_KTX}"
+        "androidx.activity:activity-ktx:${Versions.ACTIVITY_KTX}",
+        "androidx.fragment:fragment-ktx:${Versions.FRAGMENT_KTX}"
     )
+
+    const val SPLASH_SCREEN = "androidx.core:core-splashscreen:${Versions.SPLASH_SCREEN}"
 
     val LAYOUT = listOf(
         "androidx.appcompat:appcompat:${Versions.APPCOMPAT}",
-        "com.google.android.material:material:${Versions.MATERIAL}"
+        "com.google.android.material:material:${Versions.MATERIAL}",
+        "androidx.constraintlayout:constraintlayout:${Versions.CONTRAINT_LAYOUT}",
+        "androidx.recyclerview:recyclerview:${Versions.RECYCLER_VIEW}",
+        "androidx.coordinatorlayout:coordinatorlayout:${Versions.COORDINATOR_LAYOUT}"
     )
 }

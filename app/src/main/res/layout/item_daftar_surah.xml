@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/rlSurahNomor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_octagon"
+            app:tint="@color/color_primary"/>
+
+        <TextView
+            android:id="@+id/tvSurahNomor"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_primary"/>
+
+    </RelativeLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_hint"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/rlSurahNomor" />
+
+    <TextView
+        android:id="@+id/tvSurahNamaLatin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Al-Fatihah"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_primary"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@id/rlSurahNomor"
+        app:layout_constraintBottom_toTopOf="@id/tvSurahArti"
+        app:layout_constraintStart_toEndOf="@id/rlSurahNomor"/>
+
+    <TextView
+        android:id="@+id/tvSurahArti"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Mekah - Pembukaan"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text"
+        app:layout_constraintStart_toStartOf="@id/tvSurahNamaLatin"
+        app:layout_constraintTop_toBottomOf="@id/tvSurahNamaLatin"
+        app:layout_constraintBottom_toBottomOf="@id/rlSurahNomor"/>
+
+    <TextView
+        android:id="@+id/tvSurahNama"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيْم"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rlSurahNomor"
+        app:layout_constraintBottom_toBottomOf="@id/rlSurahNomor"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

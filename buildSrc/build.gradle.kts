@@ -10,7 +10,7 @@ repositories {
 
 object PluginVersions {
     const val ANDROID_GRADLE = "8.2.1"
-    const val KOTLIN = "1.9.10"
+    const val KOTLIN = "1.9.20"
     const val DAGGER_HILT = "2.48"
 }
 

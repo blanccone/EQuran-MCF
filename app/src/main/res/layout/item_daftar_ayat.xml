@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="16dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="4dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvSurahAyatNomor"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1:1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_primary_dark"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@id/ivPlay"
+            app:layout_constraintEnd_toEndOf="@id/ivPlay"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+            android:id="@+id/ivPlay"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_play_item"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSurahAyatNomor"/>
+
+        <ImageView
+            android:id="@+id/ivBookmark"
+            android:layout_centerInParent="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/ic_bookmark_24"
+            android:backgroundTint="@color/color_primary_dark"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/ivPlay"
+            app:layout_constraintEnd_toEndOf="@id/ivPlay"
+            app:layout_constraintTop_toBottomOf="@id/ivPlay"/>
+
+        <TextView
+            android:id="@+id/tvLatin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Al-Fatihah"
+            android:textSize="14sp"
+            android:textColor="@color/color_primary"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tvArab"
+            app:layout_constraintBottom_toTopOf="@id/tvIndonesia"
+            app:layout_constraintStart_toEndOf="@id/ivPlay"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/tvIndonesia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Mekah - Pembukaan"
+            android:textSize="12sp"
+            android:textColor="@color/color_text"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintStart_toStartOf="@id/tvLatin"
+            app:layout_constraintTop_toBottomOf="@id/tvLatin"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvArab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيْم"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvSurahAyatNomor"
+            app:layout_constraintBottom_toBottomOf="@id/ivPlay"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
