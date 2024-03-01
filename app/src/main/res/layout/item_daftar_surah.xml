@@ -71,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيْم"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/color_text"
         android:layout_marginEnd="16dp"

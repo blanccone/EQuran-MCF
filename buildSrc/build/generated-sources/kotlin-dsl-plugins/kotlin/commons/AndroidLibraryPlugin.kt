@@ -6,7 +6,6 @@ package commons
  *
  * @see commons.Android_library_gradle
  */
-public
 class AndroidLibraryPlugin : org.gradle.api.Plugin<org.gradle.api.Project> {
     override fun apply(target: org.gradle.api.Project) {
         try {

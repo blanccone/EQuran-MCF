@@ -31,7 +31,7 @@ class DaftarSurahAdapter: RecyclerView.Adapter<DaftarSurahAdapter.ViewHolder>() 
 
             root.setOnClickListener {
                 onItemClickListener?.let { clicked ->
-                    clicked(surah.nomor)
+                    clicked(surah)
                 }
             }
         }
@@ -45,9 +45,9 @@ class DaftarSurahAdapter: RecyclerView.Adapter<DaftarSurahAdapter.ViewHolder>() 
         notifyItemRangeChanged(0, daftarSurah.size)
     }
 
-    private var onItemClickListener: ((Int) -> Unit)? = null
+    private var onItemClickListener: ((Data) -> Unit)? = null
 
-    fun setOnItemClickListener(listener: ((Int) -> Unit)) {
+    fun setOnItemClickListener(listener: ((Data) -> Unit)) {
         onItemClickListener = listener
     }
 

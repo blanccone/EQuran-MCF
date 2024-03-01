@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
+import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
 import com.technicaltest.equranmcf.databinding.ActivityDetailSurah2Binding
@@ -16,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailSurahActivity : CoreActivity<ActivityDetailSurah2Binding>() {
 
     private val viewModel: EQuranViewModel by viewModels()
-
     private val adapter by lazy { DaftarAyatAdapter() }
 
     override fun inflateLayout(inflater: LayoutInflater): ActivityDetailSurah2Binding {
@@ -32,16 +32,28 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurah2Binding>() {
     }
 
     private fun fetchData() {
-        viewModel.getDetailSurah(nomor)
+        surah?.let {
+            viewModel.getDetailSurah(it.nomor)
+        }
     }
 
     private fun setView() {
-        binding.rvAyat.adapter = adapter
+        with(binding) {
+            rvAyat.adapter = adapter
+            tvSurahNamaLatin.text = surah?.namaLatin
+            tvSurahArti.text = "${surah?.tempatTurun} - ${surah?.arti}"
+        }
     }
 
     private fun setEvent() {
         with(binding) {
+            cvShowTafsir.setOnClickListener {
+
+            }
             cvPlayAllAudio.setOnClickListener {
+
+            }
+            adapter.setOnItemPlayListener {
 
             }
         }
@@ -56,7 +68,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurah2Binding>() {
 
         viewModel.detailSurah.observe(this) {
             it.data.ayat?.let { daftarAyat ->
-                adapter.submitData(nomor, daftarAyat)
+                adapter.submitData(surah!!.nomor, daftarAyat)
             }
         }
     }
@@ -70,10 +82,9 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurah2Binding>() {
     }
 
     companion object {
-        private var nomor = 1
-
-        fun newInstance(context: Context, nomor: Int) {
-            this.nomor = nomor
+        private var surah: Data? = null
+        fun newInstance(context: Context, surah: Data) {
+            this.surah = surah
             val intent = Intent(context, DetailSurahActivity::class.java)
             context.startActivity(intent)
         }

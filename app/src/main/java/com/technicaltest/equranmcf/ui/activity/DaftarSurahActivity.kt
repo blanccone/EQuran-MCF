@@ -4,12 +4,15 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
 import com.technicaltest.equranmcf.databinding.ActivityDaftarSurahBinding
@@ -22,6 +25,8 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
 
     private val viewModel: EQuranViewModel by viewModels()
     private val adapter by lazy { DaftarSurahAdapter() }
+
+    private val mediaPlayer = MediaPlayer()
 
     override fun inflateLayout(inflater: LayoutInflater): ActivityDaftarSurahBinding {
         return ActivityDaftarSurahBinding.inflate(inflater)
@@ -84,6 +89,24 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
         viewModel.daftarSurah.observe(this) {
             adapter.submitData(it.data)
         }
+    }
+
+    private fun playAudio(audioUrl: String) {
+        mediaPlayer.apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(audioUrl)
+            prepare()
+            start()
+        }
+    }
+
+    private fun pauseAudio() {
+
     }
 
     private fun showLoadingDialog(isLoading: Boolean) {
