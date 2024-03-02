@@ -15,6 +15,7 @@ import com.technicaltest.core.model.remote.detailtafsir.DetailTafsir
 import com.technicaltest.core.service.repository.Repository
 import com.technicaltest.persistence.service.repository.PersistenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,13 +26,13 @@ class EQuranViewModel @Inject constructor(
     private val persistenceRepository: PersistenceRepository
 ): ViewModel() {
 
-    private var _isLoading = LiveEvent<Boolean?>()
+    private val _isLoading = LiveEvent<Boolean?>()
     val isLoading: LiveData<Boolean?> = _isLoading
 
-    private var _error = LiveEvent<String?>()
+    private val _error = LiveEvent<String?>()
     val error: LiveData<String?> = _error
 
-    private var _daftarSurah = LiveEvent<DaftarSurah>()
+    private val _daftarSurah = LiveEvent<DaftarSurah>()
     val daftarSurah: LiveData<DaftarSurah> = _daftarSurah
     fun getDaftarSurah() = viewModelScope.launch {
         repository.getDaftarSurah().collectLatest {
@@ -48,7 +49,7 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
-    private var _detailSurah = LiveEvent<DetailSurah>()
+    private val _detailSurah = LiveEvent<DetailSurah>()
     val detailSurah: LiveData<DetailSurah> = _detailSurah
     fun getDetailSurah(nomor: Int) = viewModelScope.launch {
         repository.getDetailSurah(nomor).collectLatest {
@@ -65,7 +66,7 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
-    private var _detailTafsir = LiveEvent<DetailTafsir>()
+    private val _detailTafsir = LiveEvent<DetailTafsir>()
     val detailTafsir: LiveData<DetailTafsir> = _detailTafsir
     fun getDetailTafsir(nomor: Int) = viewModelScope.launch {
         repository.getDetailTafsir(nomor).collectLatest {
@@ -82,7 +83,7 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
-    private var _insertSuccessful = LiveEvent<Boolean>()
+    private val _insertSuccessful = LiveEvent<Boolean>()
     val insertSuccessful: LiveData<Boolean> = _insertSuccessful
     fun insertAyat(surah: Data, ayat: Ayat) = viewModelScope.launch {
         persistenceRepository.insertAyat(surah, ayat).collectLatest {
@@ -95,7 +96,7 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
-    private var _ayatList = LiveEvent<List<AyatData>>()
+    private val _ayatList = LiveEvent<List<AyatData>>()
     val ayatList: LiveData<List<AyatData>> = _ayatList
     fun getAyatList() = viewModelScope.launch {
         persistenceRepository.getAyatList().collectLatest {
@@ -111,7 +112,7 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
-    private var _deleteSuccessful = LiveEvent<AyatData?>()
+    private val _deleteSuccessful = LiveEvent<AyatData?>()
     val deleteSuccessful: LiveData<AyatData?> = _deleteSuccessful
     fun deleteAyat(ayatData: AyatData) = viewModelScope.launch {
         persistenceRepository.deleteAyat(ayatData).collectLatest {
