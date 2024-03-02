@@ -46,4 +46,6 @@ object Libs {
         "androidx.constraintlayout:constraintlayout:${Versions.CONTRAINT_LAYOUT}",
         "androidx.recyclerview:recyclerview:${Versions.RECYCLER_VIEW}"
     )
+
+    const val EXOPLAYER = "com.google.android.exoplayer:exoplayer:${Versions.EXOPLAYER}"
 }

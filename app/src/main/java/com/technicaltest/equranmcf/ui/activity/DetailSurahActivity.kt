@@ -2,7 +2,6 @@ package com.technicaltest.equranmcf.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +10,12 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.model.remote.detailsurah.Ayat
@@ -30,10 +35,11 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     private val viewModel: EQuranViewModel by viewModels()
     private val ayatAdapter by lazy { DaftarAyatAdapter() }
     private val tafsirAdapter by lazy { DaftarTafsirAdapter() }
-    private val mediaPlayer = MediaPlayer()
+    private var exoPlayer: ExoPlayer? = null
 
     private val audioUrlList = arrayListOf<String>()
     private var audioPosition = 0
+    private var audioIsPlaying = false
     private var playAllAudio = false
 
     private lateinit var bottomSheet: LinearLayout
@@ -49,7 +55,6 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         setView()
         setEvent()
         setObserves()
-        subscribeOnBackPressed()
     }
 
     private fun fetchDetailSurah() {
@@ -75,14 +80,6 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
             bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        mediaPlayer.apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-        }
     }
 
     private fun setEvent() {
@@ -97,22 +94,24 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
             cvPlayAllAudio.setOnClickListener {
                 when {
-                    !mediaPlayer.isPlaying -> {
+                    !audioIsPlaying -> {
                         audioPosition = 0
-                        playAudio(audioUrlList[0])
+                        playExoPlayer(audioUrlList[0])
                         setIconPlay(true)
                         playAllAudio = true
                     }
-                    mediaPlayer.isPlaying && !playAllAudio -> {
-                        stopAudio()
+
+                    audioIsPlaying && !playAllAudio -> {
+                        stopExoPlayer()
                         audioPosition = 0
                         ayatAdapter.setAudio(null)
                         setIconPlay(true)
                         playAllAudio = true
-                        playAudio(audioUrlList[0])
+                        playExoPlayer(audioUrlList[0])
                     }
+
                     else -> {
-                        stopAudio()
+                        stopExoPlayer()
                         audioPosition = 0
                         setIconPlay(false)
                         playAllAudio = false
@@ -123,23 +122,26 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
             with(ayatAdapter) {
                 setOnItemPlayListener {
                     when {
-                        !mediaPlayer.isPlaying -> {
+                        !audioIsPlaying -> {
                             audioPosition = it
-                            playAudio(audioUrlList[it])
+                            playExoPlayer(audioUrlList[it])
                         }
-                        mediaPlayer.isPlaying && playAllAudio -> {
-                            stopAudio()
+
+                        audioIsPlaying && playAllAudio -> {
+                            stopExoPlayer()
                             audioPosition = 0
                             playAllAudio = false
                             setIconPlay(false)
-                            playAudio(audioUrlList[it])
+                            playExoPlayer(audioUrlList[it])
                         }
-                        mediaPlayer.isPlaying && !playAllAudio && audioPosition != it -> {
-                            stopAudio()
+
+                        audioIsPlaying && audioPosition != it -> {
+                            stopExoPlayer()
                             audioPosition = it
-                            playAudio(audioUrlList[it])
+                            playExoPlayer(audioUrlList[it])
                         }
-                        else -> stopAudio()
+
+                        else -> stopExoPlayer()
                     }
                 }
 
@@ -184,43 +186,57 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         }
     }
 
-    private fun playAudio(audioUrl: String) {
-        try {
-            mediaPlayer.apply {
-                setDataSource(audioUrl)
-                prepare()
-                start()
-
-                setOnCompletionListener {
-                    stopAudio()
-                    when {
-                        !playAllAudio -> {
-                            ayatAdapter.setAudio(null)
-                        }
-                        playAllAudio && audioPosition < audioUrlList.size - 1 -> {
-                            audioPosition++
-                            playAudio(audioUrlList[audioPosition])
-                        }
-                        else -> setIconPlay(false)
-                    }
-                }
-
-                setOnErrorListener { _, _, _ ->
-                    stopAudio()
-                    true
-                }
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
+    private fun playExoPlayer(audioUrl: String) {
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        val mediaItem = MediaItem.fromUri(audioUrl)
+        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(mediaItem)
+        exoPlayer = ExoPlayer.Builder(this).build()
+        exoPlayer?.apply {
+            setMediaSource(mediaSource)
+            prepare()
+            playWhenReady = true
+            addListener(eventListener)
         }
     }
 
-    private fun stopAudio() {
-        mediaPlayer.apply {
-            stop()
-            reset()
+    private val eventListener = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
+            if (playbackState == Player.STATE_ENDED) {
+                stopExoPlayer()
+                when {
+                    !playAllAudio -> {
+                        ayatAdapter.setAudio(null)
+                    }
+
+                    playAllAudio && audioPosition < audioUrlList.size - 1 -> {
+                        audioPosition++
+                        playExoPlayer(audioUrlList[audioPosition])
+                    }
+
+                    else -> setIconPlay(false)
+                }
+            }
         }
+
+        override fun onPlayerError(error: PlaybackException) {
+            exoPlayer?.release()
+            if (playAllAudio) {
+                setIconPlay(false)
+            } else {
+                ayatAdapter.setAudio(null)
+            }
+            Toast.makeText(
+                this@DetailSurahActivity,
+                "Terjadi kesalahan saat memutar audio",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun stopExoPlayer() {
+        exoPlayer?.stop()
     }
 
     private fun setIconPlay(isPlaying: Boolean) {
@@ -247,18 +263,13 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         }
     }
 
-    private fun subscribeOnBackPressed() {
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (mediaPlayer.isPlaying) {
-                    stopAudio()
-                }
-                finish()
-            }
-        })
+    override fun onDestroy() {
+        super.onDestroy()
+        exoPlayer?.release()
     }
 
     companion object {
+        private const val MAX_BUFFERING = 10
         private var surah: Data? = null
         fun newInstance(context: Context, surah: Data) {
             this.surah = surah

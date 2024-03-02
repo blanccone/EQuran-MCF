@@ -75,6 +75,7 @@ dependencies {
     implementation(project(BuildModules.CORE))
     implementation(project(BuildModules.PERSISTENCE))
 
+    implementation(Libs.EXOPLAYER)
     implementation(Libs.LIFECYCLE)
     implementation(Libs.DAGGER_HILT)
 

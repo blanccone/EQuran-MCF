@@ -39,4 +39,7 @@ object Versions {
 
     // Room DB
     const val ROOM = "2.5.2"
+
+    // ExoPlayer
+    const val EXOPLAYER ="2.18.0"
 }
