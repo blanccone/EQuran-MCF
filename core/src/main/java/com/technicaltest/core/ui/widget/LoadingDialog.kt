@@ -51,9 +51,8 @@ class LoadingDialog: DialogFragment() {
         fun dismissDialog(fragmentManager: FragmentManager){
             try {
                 val dialog =  fragmentManager.findFragmentByTag(TAG)
-                dialog?.let {
-                    val df = it as DialogFragment
-                    df.dismiss()
+                if (dialog is DialogFragment) {
+                    dialog.dismiss()
                 }
             } catch (e:Exception){
                 e.printStackTrace()
