@@ -55,7 +55,7 @@ class LoadingDialog: DialogFragment() {
                     val df = it as DialogFragment
                     df.dismiss()
                 }
-            }catch (e:Exception){
+            } catch (e:Exception){
                 e.printStackTrace()
             }
         }

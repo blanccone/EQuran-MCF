@@ -6,6 +6,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import com.technicaltest.core.model.local.AyatData
@@ -35,6 +36,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
         setView()
         setEvent()
         setObserves()
+        subscribeOnBackPressed()
     }
 
     private fun fetchData() {
@@ -162,9 +164,14 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer.release()
+    private fun subscribeOnBackPressed() {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (mediaPlayer.isPlaying) {
+                    stopAudio()
+                }
+            }
+        })
     }
 
     companion object {

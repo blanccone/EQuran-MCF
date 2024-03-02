@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -48,6 +49,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         setView()
         setEvent()
         setObserves()
+        subscribeOnBackPressed()
     }
 
     private fun fetchDetailSurah() {
@@ -245,9 +247,15 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer.release()
+    private fun subscribeOnBackPressed() {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (mediaPlayer.isPlaying) {
+                    stopAudio()
+                }
+                finish()
+            }
+        })
     }
 
     companion object {
