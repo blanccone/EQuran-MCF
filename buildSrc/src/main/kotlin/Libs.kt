@@ -15,7 +15,8 @@ object Libs {
         "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTPP}"
     )
 
-    const val CHUCKER = "com.github.chuckerteam.chucker:library:${Versions.CHUCKER}"
+    const val CHUCKER_DEBUG = "com.github.chuckerteam.chucker:library:${Versions.CHUCKER}"
+    const val CHUCKER_RELEASE = "com.github.chuckerteam.chucker:library-no-op:${Versions.CHUCKER}"
 
     const val PAGING = "androidx.paging:paging-runtime-ktx:${Versions.PAGING}"
 

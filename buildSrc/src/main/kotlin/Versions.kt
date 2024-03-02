@@ -22,7 +22,7 @@ object Versions {
     const val LIVEEVENT = "1.2.0"
 
     // Coroutines Dependencies Version
-    const val COROUTINES = "1.7.1"
+    const val COROUTINES = "1.6.4"
 
     // Activity KTX for View Models Dependencies Version
     const val ACTIVITY_KTX = "1.1.0"

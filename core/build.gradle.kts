@@ -28,5 +28,6 @@ dependencies {
     api(Libs.UI_LAYER)
     api(Libs.COROUTINES)
     api(Libs.RETROFIT)
-    debugImplementation(Libs.CHUCKER)
+    debugImplementation(Libs.CHUCKER_DEBUG)
+    releaseImplementation(Libs.CHUCKER_RELEASE)
 }
