@@ -15,6 +15,7 @@ import com.technicaltest.core.model.remote.detailtafsir.DetailTafsir
 import com.technicaltest.core.service.repository.Repository
 import com.technicaltest.persistence.service.repository.PersistenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -32,11 +33,22 @@ class EQuranViewModel @Inject constructor(
     private val _error = LiveEvent<String?>()
     val error: LiveData<String?> = _error
 
+    private val debounceDuration = 300L
+    private var debounceJob: Job? = null
+
+    private fun setLoadingDebounced(isLoading: Boolean) {
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(debounceDuration)
+            _isLoading.postValue(isLoading)
+        }
+    }
+
     private val _daftarSurah = LiveEvent<DaftarSurah>()
     val daftarSurah: LiveData<DaftarSurah> = _daftarSurah
     fun getDaftarSurah() = viewModelScope.launch {
         repository.getDaftarSurah().collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> {
                     it.data?.let { data ->
@@ -53,7 +65,7 @@ class EQuranViewModel @Inject constructor(
     val detailSurah: LiveData<DetailSurah> = _detailSurah
     fun getDetailSurah(nomor: Int) = viewModelScope.launch {
         repository.getDetailSurah(nomor).collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> {
                     it.data?.let { data ->
@@ -70,7 +82,7 @@ class EQuranViewModel @Inject constructor(
     val detailTafsir: LiveData<DetailTafsir> = _detailTafsir
     fun getDetailTafsir(nomor: Int) = viewModelScope.launch {
         repository.getDetailTafsir(nomor).collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> {
                     it.data?.let { data ->
@@ -87,7 +99,7 @@ class EQuranViewModel @Inject constructor(
     val insertSuccessful: LiveData<Boolean> = _insertSuccessful
     fun insertAyat(surah: Data, ayat: Ayat) = viewModelScope.launch {
         persistenceRepository.insertAyat(surah, ayat).collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> _insertSuccessful.postValue(true)
                 is Resource.Error -> _error.postValue(it.message ?: unknownMsg())
@@ -100,7 +112,7 @@ class EQuranViewModel @Inject constructor(
     val ayatList: LiveData<List<AyatData>> = _ayatList
     fun getAyatList() = viewModelScope.launch {
         persistenceRepository.getAyatList().collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> _ayatList.postValue(it.data ?: emptyList())
                 is Resource.Error -> {
@@ -116,7 +128,7 @@ class EQuranViewModel @Inject constructor(
     val deleteSuccessful: LiveData<AyatData?> = _deleteSuccessful
     fun deleteAyat(ayatData: AyatData) = viewModelScope.launch {
         persistenceRepository.deleteAyat(ayatData).collectLatest {
-            _isLoading.postValue(it is Resource.Loading)
+            setLoadingDebounced(it is Resource.Loading)
             when(it) {
                 is Resource.Success -> _deleteSuccessful.postValue(ayatData)
                 is Resource.Error -> {

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -24,7 +23,6 @@ import com.technicaltest.equranmcf.ui.adapter.DaftarTafsirAdapter
 import com.technicaltest.equranmcf.ui.viewmodel.EQuranViewModel
 import com.technicaltest.equranmcf.ui.widget.ActionBottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
@@ -209,7 +207,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
                 setOnErrorListener { _, _, _ ->
                     stopAudio()
-                    false
+                    true
                 }
             }
 

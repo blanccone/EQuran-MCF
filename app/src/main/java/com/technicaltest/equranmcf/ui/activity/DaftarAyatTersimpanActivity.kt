@@ -139,7 +139,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
 
                 setOnErrorListener { _, _, _ ->
                     stopAudio()
-                    false
+                    true
                 }
             }
 
