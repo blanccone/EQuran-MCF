@@ -28,6 +28,12 @@ object ViewUtils {
         }
         return this
     }
+    fun View.invisible(): View {
+        if(visibility != View.INVISIBLE) {
+            visibility = View.INVISIBLE
+        }
+        return this
+    }
 
     fun unknownMsg(): String = "Oops...Something went wrong"
 

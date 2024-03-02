@@ -21,6 +21,9 @@ import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.model.remote.detailsurah.Ayat
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
+import com.technicaltest.core.util.ViewUtils.hide
+import com.technicaltest.core.util.ViewUtils.invisible
+import com.technicaltest.core.util.ViewUtils.show
 import com.technicaltest.equranmcf.R
 import com.technicaltest.equranmcf.databinding.ActivityDetailSurahBinding
 import com.technicaltest.equranmcf.ui.adapter.DaftarAyatAdapter
@@ -33,14 +36,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private val viewModel: EQuranViewModel by viewModels()
-    private val ayatAdapter by lazy { DaftarAyatAdapter() }
+    private val ayatAdapter by lazy { DaftarAyatAdapter(STATE_IDLE) }
     private val tafsirAdapter by lazy { DaftarTafsirAdapter() }
     private var exoPlayer: ExoPlayer? = null
 
     private val audioUrlList = arrayListOf<String>()
     private var audioPosition = 0
     private var audioIsPlaying = false
-    private var playAllAudio = false
+    private var isAllAudioPlaying = false
 
     private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -97,24 +100,23 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                     !audioIsPlaying -> {
                         audioPosition = 0
                         playExoPlayer(audioUrlList[0])
-                        setIconPlay(true)
-                        playAllAudio = true
+                        setAudioPlaybackState(STATE_PREPARE)
+                        isAllAudioPlaying = true
                     }
 
-                    audioIsPlaying && !playAllAudio -> {
+                    audioIsPlaying && !isAllAudioPlaying -> {
                         stopExoPlayer()
                         audioPosition = 0
-                        ayatAdapter.setAudio(null)
-                        setIconPlay(true)
-                        playAllAudio = true
+                        isAllAudioPlaying = true
+                        setAudioPlaybackState(STATE_PREPARE)
                         playExoPlayer(audioUrlList[0])
                     }
 
                     else -> {
                         stopExoPlayer()
                         audioPosition = 0
-                        setIconPlay(false)
-                        playAllAudio = false
+                        setAudioPlaybackState(STATE_IDLE)
+                        isAllAudioPlaying = false
                     }
                 }
             }
@@ -127,16 +129,17 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                             playExoPlayer(audioUrlList[it])
                         }
 
-                        audioIsPlaying && playAllAudio -> {
+                        audioIsPlaying && isAllAudioPlaying -> {
                             stopExoPlayer()
-                            audioPosition = 0
-                            playAllAudio = false
-                            setIconPlay(false)
+                            isAllAudioPlaying = false
+                            setAudioPlaybackState(STATE_PREPARE)
+                            audioPosition = it
                             playExoPlayer(audioUrlList[it])
                         }
 
                         audioIsPlaying && audioPosition != it -> {
                             stopExoPlayer()
+                            setAudioPlaybackState(STATE_PREPARE)
                             audioPosition = it
                             playExoPlayer(audioUrlList[it])
                         }
@@ -206,27 +209,27 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
             if (playbackState == Player.STATE_ENDED) {
                 stopExoPlayer()
                 when {
-                    !playAllAudio -> {
-                        ayatAdapter.setAudio(null)
-                    }
+                    !isAllAudioPlaying -> setAudioPlaybackState(STATE_IDLE)
 
-                    playAllAudio && audioPosition < audioUrlList.size - 1 -> {
+                    isAllAudioPlaying && audioPosition < audioUrlList.size - 1 -> {
                         audioPosition++
                         playExoPlayer(audioUrlList[audioPosition])
                     }
 
-                    else -> setIconPlay(false)
+                    else -> {
+                        isAllAudioPlaying = false
+                        setAudioPlaybackState(STATE_IDLE)
+                    }
                 }
             }
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            exoPlayer?.release()
-            if (playAllAudio) {
-                setIconPlay(false)
-            } else {
-                ayatAdapter.setAudio(null)
+            if (isAllAudioPlaying) {
+                isAllAudioPlaying = false
             }
+            setAudioPlaybackState(STATE_IDLE)
+            exoPlayer?.release()
             Toast.makeText(
                 this@DetailSurahActivity,
                 "Terjadi kesalahan saat memutar audio",
@@ -239,12 +242,31 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         exoPlayer?.stop()
     }
 
-    private fun setIconPlay(isPlaying: Boolean) {
-        binding.ivPlayAllAudio.background = ContextCompat.getDrawable(
-            this@DetailSurahActivity,
-            if (isPlaying) R.drawable.ic_pause_circle_24
-            else R.drawable.ic_play_circle_24
-        )
+    private fun setAudioPlaybackState(state: Int) {
+        if (isAllAudioPlaying) {
+            with(binding) {
+                if (state != STATE_PREPARE) {
+                    piLoading.hide()
+                    ivPlayAllAudio.apply {
+                        show()
+                        background = ContextCompat.getDrawable(
+                            this@DetailSurahActivity,
+                            if (state == STATE_PLAY) R.drawable.ic_pause_circle_24
+                            else R.drawable.ic_play_circle_24
+                        )
+                    }
+                } else {
+                    ivPlayAllAudio.invisible()
+                    piLoading.apply {
+                        show()
+                        isIndeterminate = true
+                    }
+                }
+            }
+            ayatAdapter.setPlaybackState(STATE_IDLE)
+        } else {
+            ayatAdapter.setPlaybackState(state)
+        }
     }
 
     private fun showSimpanAyatBottomSheet(ayat: Ayat) {
@@ -269,7 +291,9 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     }
 
     companion object {
-        private const val MAX_BUFFERING = 10
+        private const val STATE_PLAY = 1000
+        private const val STATE_PREPARE = 2000
+        private const val STATE_IDLE = 3000
         private var surah: Data? = null
         fun newInstance(context: Context, surah: Data) {
             this.surah = surah

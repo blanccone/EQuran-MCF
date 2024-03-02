@@ -112,6 +112,19 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
 
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:visibility="gone"
+                        android:id="@+id/piLoading"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:indeterminate="true"
+                        app:indicatorColor="@color/white"
+                        app:indicatorSize="24dp"
+                        app:layout_constraintTop_toTopOf="@id/ivPlayAllAudio"
+                        app:layout_constraintStart_toStartOf="@id/ivPlayAllAudio"
+                        app:layout_constraintEnd_toEndOf="@id/ivPlayAllAudio"
+                        app:layout_constraintBottom_toBottomOf="@id/ivPlayAllAudio" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

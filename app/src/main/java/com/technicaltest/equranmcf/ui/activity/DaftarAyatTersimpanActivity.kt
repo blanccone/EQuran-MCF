@@ -120,6 +120,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
 
         viewModel.deleteSuccessful.observe(this) {
             it?.let { ayatData ->
+                daftarAyat.remove(ayatData)
                 adapter.deleteData(ayatData)
             }
         }
@@ -144,13 +145,13 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
             audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
             if (playbackState == Player.STATE_ENDED) {
                 stopExoPlayer()
-                adapter.setAudio(null)
+                adapter.setPlaybackState(STATE_IDLE)
             }
         }
 
         override fun onPlayerError(error: PlaybackException) {
             exoPlayer?.release()
-            adapter.setAudio(null)
+            adapter.setPlaybackState(STATE_IDLE)
             Toast.makeText(
                 this@DaftarAyatTersimpanActivity,
                 "Terjadi kesalahan saat memutar audio",
@@ -177,6 +178,8 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     }
 
     companion object {
+        private const val STATE_PREPARE = 2000
+        private const val STATE_IDLE = 3000
 
         fun newInstance(context: Context) {
             val intent = Intent(context, DaftarAyatTersimpanActivity::class.java)
