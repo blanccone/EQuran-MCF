@@ -1,4 +1,4 @@
-package com.blanccone.mimecloud.util
+package com.technicaltest.core.util
 
 import android.annotation.SuppressLint
 import android.app.Activity

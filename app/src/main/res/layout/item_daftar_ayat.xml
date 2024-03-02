@@ -34,6 +34,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_play_item"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,13 +50,16 @@
             android:background="@drawable/ic_bookmark_24"
             android:backgroundTint="@color/color_primary_dark"
             android:layout_marginTop="8dp"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintStart_toStartOf="@id/ivPlay"
             app:layout_constraintEnd_toEndOf="@id/ivPlay"
             app:layout_constraintTop_toBottomOf="@id/ivPlay"/>
 
         <TextView
             android:id="@+id/tvLatin"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="Al-Fatihah"
             android:textSize="14sp"
@@ -63,32 +69,36 @@
             app:layout_constraintTop_toBottomOf="@id/tvArab"
             app:layout_constraintBottom_toTopOf="@id/tvIndonesia"
             app:layout_constraintStart_toEndOf="@id/ivPlay"
+            app:layout_constraintEnd_toEndOf="@id/tvArab"
             app:layout_constraintVertical_chainStyle="packed"/>
 
         <TextView
             android:id="@+id/tvIndonesia"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="Mekah - Pembukaan"
             android:textSize="12sp"
             android:textColor="@color/color_text"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintStart_toStartOf="@id/tvLatin"
+            app:layout_constraintEnd_toEndOf="@id/tvArab"
             app:layout_constraintTop_toBottomOf="@id/tvLatin"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/tvArab"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيْم"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/color_text"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvSurahAyatNomor"
-            app:layout_constraintBottom_toBottomOf="@id/ivPlay"/>
+            app:layout_constraintStart_toStartOf="@id/tvLatin"
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

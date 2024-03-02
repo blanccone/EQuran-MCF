@@ -1,9 +1,9 @@
-package com.blanccone.mimecloud.service.util
+package com.technicaltest.core.service.util
 
 import android.util.Log
 import androidx.annotation.WorkerThread
-import com.blanccone.mimecloud.service.util.NetworkUtils.codeException
-import com.blanccone.mimecloud.service.util.NetworkUtils.handleException
+import com.technicaltest.core.service.util.NetworkUtils.codeException
+import com.technicaltest.core.service.util.NetworkUtils.handleException
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
@@ -22,7 +22,8 @@ abstract class NetworkBoundSource<API_RESPONSE> {
                 emit(Resource.Success(data))
             }else{
                 Log.e("ERROR", response.message())
-                emit(Resource.Error(
+                emit(
+                    Resource.Error(
                     message = response.message(),
                     code = response.code()
                 ))

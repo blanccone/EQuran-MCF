@@ -41,13 +41,15 @@
 
         <TextView
             android:id="@+id/tvTafsir"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="Mekah - Pembukaan"
             android:textSize="12sp"
             android:textColor="@color/color_text"
             android:layout_marginVertical="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintStart_toStartOf="@id/tvSurahAyatNomor"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvSurahAyatNomor"
             app:layout_constraintBottom_toBottomOf="parent"/>
 

@@ -1,6 +1,5 @@
 import extensions.api
 import extensions.debugImplementation
-import extensions.implementation
 import java.util.Properties
 
 plugins {
@@ -8,6 +7,7 @@ plugins {
 }
 
 android {
+    namespace = BuildAndroidConfig.CORE_ID
 
     val endpointFile = file("../endpoint.properties")
     val endpointProperties = Properties()
@@ -17,6 +17,7 @@ android {
         buildConfigField("String", "BASE_URL", "${endpointProperties["BASE_URL"]}")
     }
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 }

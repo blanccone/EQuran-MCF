@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/ic_play_circle_accent_24" />
+    <item android:drawable="@drawable/ic_circle_24" />
 
     <item android:drawable="@drawable/ic_play_arrow_24"
         android:top="4dp"

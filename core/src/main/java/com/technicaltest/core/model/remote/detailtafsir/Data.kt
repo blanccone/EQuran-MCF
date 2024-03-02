@@ -8,8 +8,6 @@ data class Data(
     val nama: String,
     val namaLatin: String,
     val nomor: Int,
-    val suratSebelumnya: SuratSebelumnya,
-    val suratSelanjutnya: SuratSelanjutnya,
-    val tafsir: List<Tafsir>,
+    val tafsir: List<Tafsir>?,
     val tempatTurun: String
 )

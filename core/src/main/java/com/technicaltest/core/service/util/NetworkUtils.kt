@@ -1,4 +1,4 @@
-package com.blanccone.mimecloud.service.util
+package com.technicaltest.core.service.util
 
 import retrofit2.HttpException
 import java.net.SocketException

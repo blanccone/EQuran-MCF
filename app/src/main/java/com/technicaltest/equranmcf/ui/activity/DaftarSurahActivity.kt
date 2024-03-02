@@ -13,12 +13,17 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.widget.doAfterTextChanged
+import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
 import com.technicaltest.equranmcf.databinding.ActivityDaftarSurahBinding
 import com.technicaltest.equranmcf.ui.adapter.DaftarSurahAdapter
 import com.technicaltest.equranmcf.ui.viewmodel.EQuranViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
@@ -26,7 +31,7 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
     private val viewModel: EQuranViewModel by viewModels()
     private val adapter by lazy { DaftarSurahAdapter() }
 
-    private val mediaPlayer = MediaPlayer()
+    private var daftarSurah = listOf<Data>()
 
     override fun inflateLayout(inflater: LayoutInflater): ActivityDaftarSurahBinding {
         return ActivityDaftarSurahBinding.inflate(inflater)
@@ -64,14 +69,39 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
 
     private fun setView() {
         with(binding) {
+            val formatter = SimpleDateFormat("EEEE, dd MMM yyyy", Locale.getDefault())
+            val currentTime = Calendar.getInstance().time
+            val currentTimeFormatted = formatter.format(currentTime)
+            tvToday.text = "$currentTimeFormatted"
             rvSurah.adapter = adapter
         }
     }
 
     private fun setEvent() {
         with(binding) {
-            etSearch
-            ivBookmarks
+            etSearch.doAfterTextChanged {
+                val filteredSurah = arrayListOf<Data>()
+                val text = it.toString()
+                if (text.isEmpty()) {
+                    filteredSurah.apply {
+                        clear()
+                        addAll(daftarSurah)
+                    }
+                } else {
+                    if (daftarSurah.isNotEmpty()) {
+                        daftarSurah.forEach {
+                            if (it.namaLatin.contains(text, true)) {
+                                filteredSurah.add(it)
+                            }
+                        }
+                    }
+                }
+                adapter.filterData(filteredSurah)
+            }
+
+            ivBookmarks.setOnClickListener {
+                DaftarAyatTersimpanActivity.newInstance(this@DaftarSurahActivity)
+            }
 
             adapter.setOnItemClickListener {
                 DetailSurahActivity.newInstance(this@DaftarSurahActivity, it)
@@ -87,28 +117,10 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
         }
 
         viewModel.daftarSurah.observe(this) {
+            daftarSurah = it.data
             adapter.submitData(it.data)
         }
     }
-
-    private fun playAudio(audioUrl: String) {
-        mediaPlayer.apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-            setDataSource(audioUrl)
-            prepare()
-            start()
-        }
-    }
-
-    private fun pauseAudio() {
-
-    }
-
     private fun showLoadingDialog(isLoading: Boolean) {
         if (isLoading) {
             LoadingDialog.showDialog(supportFragmentManager)

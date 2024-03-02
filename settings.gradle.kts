@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "EQuran MCF"
-include(":app", ":core")
+include(":app", ":core", ":persistence")

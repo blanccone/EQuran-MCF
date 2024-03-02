@@ -1,5 +1,6 @@
 package com.technicaltest.equranmcf.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +44,13 @@ class DaftarSurahAdapter: RecyclerView.Adapter<DaftarSurahAdapter.ViewHolder>() 
         daftarSurah.clear()
         daftarSurah.addAll(dataList)
         notifyItemRangeChanged(0, daftarSurah.size)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun filterData(dataList: List<Data>) {
+        daftarSurah.clear()
+        daftarSurah.addAll(dataList)
+        notifyDataSetChanged()
     }
 
     private var onItemClickListener: ((Data) -> Unit)? = null

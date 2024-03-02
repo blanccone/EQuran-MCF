@@ -1,6 +1,6 @@
-package com.blanccone.mimecloud.service.util
+package com.technicaltest.core.service.util
 
-import com.blanccone.mimecloud.service.util.NetworkUtils.handleException
+import com.technicaltest.core.service.util.NetworkUtils.handleException
 import kotlinx.coroutines.flow.flow
 
 abstract class DatabaseBoundSource<LOCAL_RESPONSE_TYPE, MAPPED_RESPONSE_TYPE>(

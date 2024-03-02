@@ -1,7 +1,7 @@
-package com.blanccone.mimecloud.util
+package com.technicaltest.core.util
 
 import android.util.Base64
-import com.technicaltest.equranmcf.BuildConfig
+import com.technicaltest.core.BuildConfig
 import java.io.UnsupportedEncodingException
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest

@@ -1,12 +1,17 @@
 package com.technicaltest.equranmcf.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.technicaltest.core.model.remote.detailsurah.Ayat
+import com.technicaltest.equranmcf.R
 import com.technicaltest.equranmcf.databinding.ItemDaftarAyatBinding
 
-class DaftarAyatAdapter: RecyclerView.Adapter<DaftarAyatAdapter.ViewHolder>() {
+class DaftarAyatAdapter(
+    private var playingAudioPosition: Int? = null
+): RecyclerView.Adapter<DaftarAyatAdapter.ViewHolder>() {
 
     private var surahNomor = ""
     private val daftarSurah = arrayListOf<Ayat>()
@@ -29,16 +34,22 @@ class DaftarAyatAdapter: RecyclerView.Adapter<DaftarAyatAdapter.ViewHolder>() {
             tvArab.text = ayat.teksArab
             tvLatin.text = ayat.teksLatin
             tvIndonesia.text = ayat.teksIndonesia
+            ivPlay.background = ContextCompat.getDrawable(
+                root.context,
+                if (playingAudioPosition == position) R.drawable.ic_pause_item
+                else R.drawable.ic_play_item
+            )
 
             ivPlay.setOnClickListener {
                 onItemPlayListener?.let { play ->
-                    play(ayat.audio.audio01)
+                    play(position)
                 }
+                setAudio(position)
             }
 
             ivBookmark.setOnClickListener {
                 onItemBookmarkListener?.let { bookmark ->
-                    bookmark(position)
+                    bookmark(ayat)
                 }
             }
         }
@@ -53,15 +64,21 @@ class DaftarAyatAdapter: RecyclerView.Adapter<DaftarAyatAdapter.ViewHolder>() {
         notifyItemRangeChanged(0, daftarSurah.size)
     }
 
-    private var onItemPlayListener: ((String) -> Unit)? = null
+    @SuppressLint("NotifyDataSetChanged")
+    fun setAudio(position: Int?) {
+        playingAudioPosition = position
+        notifyDataSetChanged()
+    }
 
-    fun setOnItemPlayListener(listener: ((String) -> Unit)) {
+    private var onItemPlayListener: ((Int) -> Unit)? = null
+
+    fun setOnItemPlayListener(listener: ((Int) -> Unit)) {
         onItemPlayListener = listener
     }
 
-    private var onItemBookmarkListener: ((Int) -> Unit)? = null
+    private var onItemBookmarkListener: ((Ayat) -> Unit)? = null
 
-    fun setOnItemBookmarkListener(listener: ((Int) -> Unit)) {
+    fun setOnItemBookmarkListener(listener: ((Ayat) -> Unit)) {
         onItemBookmarkListener = listener
     }
 

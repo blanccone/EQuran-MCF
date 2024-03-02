@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.technicaltest.equranmcf.R
-import com.technicaltest.equranmcf.databinding.DialogLoadingBinding
+import com.technicaltest.core.R
+import com.technicaltest.core.databinding.DialogLoadingBinding
 
 class LoadingDialog: DialogFragment() {
 

@@ -1,5 +1,7 @@
 object BuildAndroidConfig {
     const val APP_ID = "com.technicaltest.equranmcf"
+    const val CORE_ID = "com.technicaltest.core"
+    const val PERSISTENCE_ID = "com.technicaltest.persistence"
 
     const val COMPILE_SDK_VERSION = 33
     const val MIN_SDK_VERSION = 24

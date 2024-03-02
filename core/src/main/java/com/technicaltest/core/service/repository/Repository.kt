@@ -1,7 +1,7 @@
 package com.technicaltest.core.service.repository
 
-import com.blanccone.mimecloud.service.util.NetworkBoundSource
-import com.blanccone.mimecloud.service.util.Resource
+import com.technicaltest.core.service.util.NetworkBoundSource
+import com.technicaltest.core.service.util.Resource
 import com.technicaltest.core.model.remote.daftarsurah.DaftarSurah
 import com.technicaltest.core.model.remote.detailsurah.DetailSurah
 import com.technicaltest.core.model.remote.detailtafsir.DetailTafsir

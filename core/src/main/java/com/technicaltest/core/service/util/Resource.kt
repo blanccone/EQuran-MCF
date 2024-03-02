@@ -1,4 +1,4 @@
-package com.blanccone.mimecloud.service.util
+package com.technicaltest.core.service.util
 
 sealed class Resource<T>(
     val code: Int = 200,
