@@ -43,7 +43,24 @@ class DaftarAyatAdapter(
             tvArab.text = ayat.teksArab
             tvLatin.text = ayat.teksLatin
             tvIndonesia.text = ayat.teksIndonesia
-            if (playbackState == STATE_IDLE) {
+            if (audioPlayingPosition == position) {
+                if (playbackState != STATE_PREPARE) {
+                    piLoading.hide()
+                    ivPlay.apply {
+                        show()
+                        background = ContextCompat.getDrawable(
+                            root.context,
+                            R.drawable.ic_pause_item
+                        )
+                    }
+                } else {
+                    piLoading.apply {
+                        show()
+                        isIndeterminate = true
+                    }
+                    ivPlay.invisible()
+                }
+            } else {
                 ivPlay.apply {
                     show()
                     background = ContextCompat.getDrawable(
@@ -52,25 +69,6 @@ class DaftarAyatAdapter(
                     )
                 }
                 piLoading.hide()
-            } else {
-                if (audioPlayingPosition == position) {
-                    if (playbackState != STATE_PREPARE) {
-                        piLoading.hide()
-                        ivPlay.apply {
-                            show()
-                            background = ContextCompat.getDrawable(
-                                root.context,
-                                R.drawable.ic_pause_item
-                            )
-                        }
-                    } else {
-                        piLoading.apply {
-                            show()
-                            isIndeterminate = true
-                        }
-                        ivPlay.invisible()
-                    }
-                }
             }
 
             ivPlay.setOnClickListener {
