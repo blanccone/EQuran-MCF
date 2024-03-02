@@ -94,32 +94,49 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
             }
 
             cvPlayAllAudio.setOnClickListener {
-                if (!mediaPlayer.isPlaying) {
-                    audioPosition = 0
-                    playAudio(audioUrlList[0])
-                    setIconPlay(true)
-                    playAllAudio = true
-                } else {
-                    stopAudio()
-                    setIconPlay(false)
-                    playAllAudio = false
+                when {
+                    !mediaPlayer.isPlaying -> {
+                        audioPosition = 0
+                        playAudio(audioUrlList[0])
+                        setIconPlay(true)
+                        playAllAudio = true
+                    }
+                    mediaPlayer.isPlaying && !playAllAudio -> {
+                        stopAudio()
+                        audioPosition = 0
+                        ayatAdapter.setAudio(null)
+                        setIconPlay(true)
+                        playAllAudio = true
+                        playAudio(audioUrlList[0])
+                    }
+                    else -> {
+                        stopAudio()
+                        audioPosition = 0
+                        setIconPlay(false)
+                        playAllAudio = false
+                    }
                 }
             }
 
             with(ayatAdapter) {
                 setOnItemPlayListener {
                     when {
-                        !mediaPlayer.isPlaying || audioPosition != it -> {
+                        !mediaPlayer.isPlaying -> {
                             audioPosition = it
                             playAudio(audioUrlList[it])
                         }
-
                         mediaPlayer.isPlaying && playAllAudio -> {
+                            stopAudio()
                             audioPosition = 0
-                            playAudio(audioUrlList[it])
+                            playAllAudio = false
                             setIconPlay(false)
+                            playAudio(audioUrlList[it])
                         }
-
+                        mediaPlayer.isPlaying && !playAllAudio && audioPosition != it -> {
+                            stopAudio()
+                            audioPosition = it
+                            playAudio(audioUrlList[it])
+                        }
                         else -> stopAudio()
                     }
                 }
@@ -166,32 +183,37 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     }
 
     private fun playAudio(audioUrl: String) {
-        mediaPlayer.apply {
-            reset()
-            setDataSource(audioUrl)
-            prepare()
-            start()
+        try {
+            mediaPlayer.apply {
+                setDataSource(audioUrl)
+                prepare()
+                start()
 
-            setOnCompletionListener {
-                when {
-                    !playAllAudio -> {
-                        stopAudio()
-                        ayatAdapter.setAudio(null)
+                setOnCompletionListener {
+                    when {
+                        !playAllAudio -> {
+                            stopAudio()
+                            ayatAdapter.setAudio(null)
+                        }
+                        playAllAudio && audioPosition < audioUrlList.size - 1 -> {
+                            audioPosition++
+                            playAudio(audioUrlList[audioPosition])
+                        }
+                        else -> stopAudio()
                     }
-
-                    playAllAudio && audioPosition < audioUrlList.size - 1 -> {
-                        audioPosition++
-                        playAudio(audioUrlList[audioPosition])
-                    }
-
-                    else -> stopAudio()
                 }
             }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun stopAudio() {
-        mediaPlayer.stop()
+        mediaPlayer.apply {
+            stop()
+            reset()
+        }
     }
 
     private fun setIconPlay(isPlaying: Boolean) {
@@ -216,6 +238,11 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         } else {
             LoadingDialog.dismissDialog(supportFragmentManager)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
     }
 
     companion object {

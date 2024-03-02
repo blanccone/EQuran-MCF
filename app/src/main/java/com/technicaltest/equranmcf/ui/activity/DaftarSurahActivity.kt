@@ -40,7 +40,6 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationPermissions()
-        fetchData()
         setView()
         setEvent()
         setObserves()
@@ -59,7 +58,11 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     0
                 )
+            } else {
+                fetchData()
             }
+        } else{
+            fetchData()
         }
     }
 

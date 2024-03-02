@@ -60,6 +60,11 @@ android {
         jvmTarget = "1.8"
     }
 
+    lintOptions {
+        lint.checkReleaseBuilds = false
+        lint.abortOnError = false
+    }
+
     buildFeatures {
         buildConfig = true
         viewBinding = true

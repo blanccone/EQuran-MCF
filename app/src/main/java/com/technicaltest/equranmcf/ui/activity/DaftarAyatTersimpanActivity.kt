@@ -2,6 +2,7 @@ package com.technicaltest.equranmcf.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     private val adapter by lazy { DaftarAyatTersimpanAdapter() }
     private val mediaPlayer = MediaPlayer()
     private val daftarAyat = arrayListOf<AyatData>()
+    private var audioPosition = 0
 
     override fun inflateLayout(inflater: LayoutInflater): ActivityDaftarAyatTersimpanBinding {
         return ActivityDaftarAyatTersimpanBinding.inflate(inflater)
@@ -41,6 +43,14 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
 
     private fun setView() {
         binding.rvAyat.adapter = adapter
+        mediaPlayer.apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+        }
     }
 
     private fun setEvent() {
@@ -50,34 +60,48 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
             }
 
             etSearch.doAfterTextChanged {
-                val filteredAyat = arrayListOf<AyatData>()
-                val text = it.toString()
-                if (text.isEmpty()) {
-                    filteredAyat.apply {
-                        clear()
-                        addAll(daftarAyat)
-                    }
-                } else {
-                    if (daftarAyat.isNotEmpty()) {
-                        daftarAyat.forEach {
-                            if (it.namaLatin.contains(text, true)) {
-                                filteredAyat.add(it)
-                            }
-                        }
-                    }
-                }
-                adapter.filterData(filteredAyat)
+                searchData(it.toString())
             }
         }
 
         with(adapter) {
             setOnItemPlayListener {
-                playAudio(daftarAyat[it].audio)
+                when {
+                    !mediaPlayer.isPlaying -> {
+                        audioPosition = it
+                        playAudio(daftarAyat[it].audio)
+                    }
+                    mediaPlayer.isPlaying && audioPosition != it -> {
+                        stopAudio()
+                        audioPosition = it
+                        playAudio(daftarAyat[it].audio)
+                    }
+                    else -> stopAudio()
+                }
             }
             setOnItemDeleteListener {
                 showDeleteAyatBottomSheet(it)
             }
         }
+    }
+
+    private fun searchData(text: String) {
+        val filteredAyat = arrayListOf<AyatData>()
+        if (text.isEmpty()) {
+            filteredAyat.apply {
+                clear()
+                addAll(daftarAyat)
+            }
+        } else {
+            if (daftarAyat.isNotEmpty()) {
+                daftarAyat.forEach {
+                    if (it.namaLatin.contains(text, true)) {
+                        filteredAyat.add(it)
+                    }
+                }
+            }
+        }
+        adapter.filterData(filteredAyat)
     }
 
     private fun setObserves() {
@@ -97,21 +121,34 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     }
 
     private fun playAudio(audioUrl: String) {
-        mediaPlayer.apply {
-            reset()
-            setDataSource(audioUrl)
-            prepare()
-            start()
+        try {
+            mediaPlayer.apply {
+                setDataSource(audioUrl)
+                prepare()
+                start()
 
-            setOnCompletionListener {
-                stopAudio()
-                adapter.setAudio(null)
+                setOnCompletionListener {
+                    stopAudio()
+                    adapter.setAudio(null)
+                }
+
+                setOnErrorListener { _, _, _ ->
+                    stopAudio()
+                    false
+                }
             }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun stopAudio() {
-        mediaPlayer.stop()
+        mediaPlayer.apply {
+            stop()
+            reset()
+        }
+        adapter.setAudio(null)
     }
 
     private fun showDeleteAyatBottomSheet(ayatData: AyatData) {
@@ -120,6 +157,11 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
                 viewModel.deleteAyat(ayatData)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
     }
 
     companion object {
