@@ -143,6 +143,9 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     private val eventListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
             audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
+            if (playbackState == Player.STATE_READY) {
+                adapter.setPlaybackState(STATE_PLAY, audioPosition)
+            }
             if (playbackState == Player.STATE_ENDED) {
                 stopExoPlayer()
                 adapter.setPlaybackState(STATE_IDLE)
@@ -178,7 +181,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     }
 
     companion object {
-        private const val STATE_PREPARE = 2000
+        private const val STATE_PLAY = 1000
         private const val STATE_IDLE = 3000
 
         fun newInstance(context: Context) {

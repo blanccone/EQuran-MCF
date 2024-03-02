@@ -99,9 +99,9 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                 when {
                     !audioIsPlaying -> {
                         audioPosition = 0
-                        playExoPlayer(audioUrlList[0])
-                        setAudioPlaybackState(STATE_PREPARE)
                         isAllAudioPlaying = true
+                        setAudioPlaybackState(STATE_PREPARE)
+                        playExoPlayer(audioUrlList[0])
                     }
 
                     audioIsPlaying && !isAllAudioPlaying -> {
@@ -206,6 +206,9 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     private val eventListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
             audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
+            if (playbackState == Player.STATE_READY) {
+                setAudioPlaybackState(STATE_PLAY)
+            }
             if (playbackState == Player.STATE_ENDED) {
                 stopExoPlayer()
                 when {
@@ -243,8 +246,8 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     }
 
     private fun setAudioPlaybackState(state: Int) {
-        if (isAllAudioPlaying) {
-            with(binding) {
+        with(binding) {
+            if (isAllAudioPlaying) {
                 if (state != STATE_PREPARE) {
                     piLoading.hide()
                     ivPlayAllAudio.apply {
@@ -262,10 +265,17 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                         isIndeterminate = true
                     }
                 }
+                ayatAdapter.setPlaybackState(STATE_IDLE)
+            } else {
+                ayatAdapter.setPlaybackState(state, audioPosition)
+                ivPlayAllAudio.apply {
+                    show()
+                    background = ContextCompat.getDrawable(
+                        this@DetailSurahActivity,
+                        R.drawable.ic_play_circle_24
+                    )
+                }
             }
-            ayatAdapter.setPlaybackState(STATE_IDLE)
-        } else {
-            ayatAdapter.setPlaybackState(state)
         }
     }
 
