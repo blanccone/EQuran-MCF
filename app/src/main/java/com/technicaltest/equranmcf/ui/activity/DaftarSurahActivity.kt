@@ -9,6 +9,7 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -120,8 +121,12 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
         }
 
         viewModel.daftarSurah.observe(this) {
-            daftarSurah = it.data
-            adapter.submitData(it.data)
+            Toast.makeText(this, "A ${it.data?.size}", Toast.LENGTH_SHORT).show()
+            it.data?.let { dataList ->
+                Toast.makeText(this, "B ${dataList.size}", Toast.LENGTH_SHORT).show()
+                daftarSurah = dataList
+                adapter.submitData(dataList)
+            }
         }
     }
     private fun showLoadingDialog(isLoading: Boolean) {
