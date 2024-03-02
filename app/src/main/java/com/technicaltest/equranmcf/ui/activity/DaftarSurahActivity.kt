@@ -121,9 +121,7 @@ class DaftarSurahActivity : CoreActivity<ActivityDaftarSurahBinding>() {
         }
 
         viewModel.daftarSurah.observe(this) {
-            Toast.makeText(this, "A ${it.data?.size}", Toast.LENGTH_SHORT).show()
             it.data?.let { dataList ->
-                Toast.makeText(this, "B ${dataList.size}", Toast.LENGTH_SHORT).show()
                 daftarSurah = dataList
                 adapter.submitData(dataList)
             }

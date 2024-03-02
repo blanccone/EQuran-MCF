@@ -80,6 +80,9 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
                 }
             }
             setOnItemDeleteListener {
+                if (mediaPlayer.isPlaying) {
+                    stopAudio()
+                }
                 showDeleteAyatBottomSheet(it)
             }
         }

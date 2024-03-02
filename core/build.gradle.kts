@@ -1,5 +1,5 @@
 import extensions.api
-import extensions.debugImplementation
+import extensions.implementation
 import java.util.Properties
 
 plugins {
@@ -28,6 +28,5 @@ dependencies {
     api(Libs.UI_LAYER)
     api(Libs.COROUTINES)
     api(Libs.RETROFIT)
-    debugImplementation(Libs.CHUCKER_DEBUG)
-    releaseImplementation(Libs.CHUCKER_RELEASE)
+    implementation(Libs.CHUCKER_DEBUG)
 }

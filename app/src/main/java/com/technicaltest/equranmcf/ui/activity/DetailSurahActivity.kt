@@ -160,7 +160,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                 ayatAdapter.submitData(surah!!.nomor, ayatList)
                 audioUrlList.clear()
                 ayatList.forEach { ayat ->
-                    audioUrlList.add(ayat.audio.audio01)
+                    audioUrlList.add(ayat.audio.audio02)
                 }
             }
         }
@@ -190,17 +190,22 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                 start()
 
                 setOnCompletionListener {
+                    stopAudio()
                     when {
                         !playAllAudio -> {
-                            stopAudio()
                             ayatAdapter.setAudio(null)
                         }
                         playAllAudio && audioPosition < audioUrlList.size - 1 -> {
                             audioPosition++
                             playAudio(audioUrlList[audioPosition])
                         }
-                        else -> stopAudio()
+                        else -> setIconPlay(false)
                     }
+                }
+
+                setOnErrorListener { _, _, _ ->
+                    stopAudio()
+                    false
                 }
             }
 

@@ -28,7 +28,7 @@ internal data class AyatEntity(
                 namaLatin = surah.namaLatin,
                 tempatTurun = surah.tempatTurun,
                 arti = surah.arti,
-                audio = ayat.audio.audio01,
+                audio = ayat.audio.audio02,
                 nomorAyat = ayat.nomorAyat,
                 teksArab = ayat.teksArab,
                 teksIndonesia = ayat.teksIndonesia,
