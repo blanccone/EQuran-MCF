@@ -1,6 +1,7 @@
 package com.technicaltest.equranmcf.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -44,6 +45,7 @@ class DaftarAyatAdapter(
             tvLatin.text = ayat.teksLatin
             tvIndonesia.text = ayat.teksIndonesia
             if (playbackState != STATE_IDLE) {
+                Log.d("WHYWHY", "$playbackState::$position")
                 if (audioPlayingPosition == position) {
                     if (playbackState != STATE_PREPARE) {
                         piLoading.hide()
@@ -63,6 +65,7 @@ class DaftarAyatAdapter(
                     }
                 }
             } else {
+                Log.d("WHYWHY", "$playbackState::$position")
                 ivPlay.apply {
                     show()
                     background = ContextCompat.getDrawable(
@@ -77,7 +80,12 @@ class DaftarAyatAdapter(
                 onItemPlayListener?.let { play ->
                     play(position)
                 }
-                setPlaybackState(STATE_PREPARE, position)
+            }
+
+            piLoading.setOnClickListener {
+                onItemPlayListener?.let { play ->
+                    play(position)
+                }
             }
 
             ivBookmark.setOnClickListener {
@@ -99,8 +107,8 @@ class DaftarAyatAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setPlaybackState(state: Int?, position: Int? = null) {
-        audioPlayingPosition = position
         playbackState = state
+        audioPlayingPosition = position
         notifyDataSetChanged()
     }
 

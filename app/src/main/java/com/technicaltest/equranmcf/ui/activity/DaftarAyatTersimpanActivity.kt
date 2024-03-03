@@ -29,6 +29,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     private var exoPlayer: ExoPlayer? = null
 
     private val daftarAyat = arrayListOf<AyatData>()
+    private var audioIsPreparing = false
     private var audioIsPlaying = false
     private var audioPosition = 0
 
@@ -66,14 +67,19 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
         with(adapter) {
             setOnItemPlayListener {
                 when {
-                    !audioIsPlaying -> playAyatAudio(it)
-
+                    !audioIsPlaying && !audioIsPreparing -> {
+                        requestToPlayAudio(it)
+                    }
                     audioIsPlaying && audioPosition != it -> {
                         stopExoPlayer()
-                        playAyatAudio(it)
+                        requestToPlayAudio(it)
                     }
-
-                    else -> stopAyatAudio()
+                    audioIsPreparing && audioPosition != it -> {
+                        resetAudio()
+                        requestToPlayAudio(it)
+                    }
+                    audioIsPlaying -> stopAudio()
+                    else -> resetAudio()
                 }
             }
             setOnItemDeleteListener {
@@ -119,17 +125,42 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
                 adapter.deleteData(ayatData)
             }
         }
+
+        viewModel.isAudioPreparing.observe(this) {
+            it?.let { isPreparing ->
+                if (isPreparing) {
+                    prepareAudio()
+                    viewModel.setPreparingAudioDebounced(false)
+                }
+            }
+        }
     }
 
-    private fun playAyatAudio(selectedPosition: Int) {
+    private fun requestToPlayAudio(selectedPosition: Int) {
         audioPosition = selectedPosition
-        adapter.setPlaybackState(STATE_PREPARE)
+        audioIsPreparing = true
+        adapter.setPlaybackState(STATE_IDLE)
+        viewModel.setPreparingAudioDebounced(true)
+    }
+
+    private fun prepareAudio() {
+        adapter.setPlaybackState(STATE_PREPARE, audioPosition)
         playExoPlayer(daftarAyat[audioPosition].audio)
     }
 
-    private fun stopAyatAudio() {
+    private fun stopAudio() {
         stopExoPlayer()
+        audioPosition = 0
         adapter.setPlaybackState(STATE_IDLE)
+    }
+
+    private fun resetAudio() {
+        if (audioIsPreparing) {
+            audioIsPreparing = false
+            exoPlayer?.release()
+        }
+        adapter.setPlaybackState(STATE_IDLE)
+        audioPosition = 0
     }
 
     private fun playExoPlayer(audioUrl: String) {
@@ -148,8 +179,9 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
 
     private val eventListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
-            audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
+            audioIsPlaying = playbackState == Player.STATE_READY
             if (playbackState == Player.STATE_READY) {
+                audioIsPreparing = false
                 adapter.setPlaybackState(STATE_PLAY, audioPosition)
             }
             if (playbackState == Player.STATE_ENDED) {

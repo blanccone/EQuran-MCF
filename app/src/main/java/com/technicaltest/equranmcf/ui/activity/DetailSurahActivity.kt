@@ -2,12 +2,10 @@ package com.technicaltest.equranmcf.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.ExoPlayer
@@ -21,7 +19,6 @@ import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.model.remote.detailsurah.Ayat
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
-import com.technicaltest.core.util.ViewUtils.hide
 import com.technicaltest.core.util.ViewUtils.invisible
 import com.technicaltest.core.util.ViewUtils.show
 import com.technicaltest.equranmcf.R
@@ -44,7 +41,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     private var audioPosition = 0
     private var audioIsPreparing = false
     private var audioIsPlaying = false
-    private var isSurahAudioPlaying = false
+    private var isSurahAudio = false
 
     private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -98,28 +95,47 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
             cvSurahAudio.setOnClickListener {
                 when {
-                    !audioIsPlaying -> playSurahAudio()
-
-                    audioIsPlaying && !isSurahAudioPlaying -> {
-                        stopExoPlayer()
-                        playSurahAudio()
+                    !audioIsPlaying && !audioIsPreparing -> {
+                        requestToPlayAudio(
+                            selectedPosition = 0,
+                            isSurahAudioPreparing = true
+                        )
                     }
-
-                    else -> stopAllAudio()
+                    audioIsPlaying && !isSurahAudio -> {
+                        stopExoPlayer()
+                        requestToPlayAudio(
+                            selectedPosition = 0,
+                            isSurahAudioPreparing = true
+                        )
+                    }
+                    audioIsPreparing && !isSurahAudio -> {
+                        resetAudio()
+                        requestToPlayAudio(
+                            selectedPosition = 0,
+                            isSurahAudioPreparing = true
+                        )
+                    }
+                    audioIsPlaying -> stopAudio()
+                    else -> resetAudio()
                 }
             }
 
             with(ayatAdapter) {
                 setOnItemPlayListener {
                     when {
-                        !audioIsPlaying -> playAyatAudio(it)
-
-                        audioIsPlaying && (isSurahAudioPlaying || audioPosition != it)-> {
-                            stopExoPlayer()
-                            playAyatAudio(it)
+                        !audioIsPlaying && !audioIsPreparing -> {
+                            requestToPlayAudio(it)
                         }
-
-                        else -> stopAllAudio()
+                        audioIsPlaying && (isSurahAudio || audioPosition != it) -> {
+                            stopExoPlayer()
+                            requestToPlayAudio(it)
+                        }
+                        audioIsPreparing && (isSurahAudio || audioPosition != it) -> {
+                            resetAudio()
+                            requestToPlayAudio(it)
+                        }
+                        audioIsPlaying -> stopAudio()
+                        else -> resetAudio()
                     }
                 }
 
@@ -162,32 +178,48 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                 Toast.makeText(this, "Ayat Tersimpan", Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.isAudioPreparing.observe(this) {
+            it?.let { isPreparing ->
+                if (isPreparing) {
+                    prepareAudio()
+                    viewModel.setPreparingAudioDebounced(false)
+                }
+            }
+        }
     }
-    
-    private fun playSurahAudio() {
-        audioPosition = 0
-        isSurahAudioPlaying = true
-        audioIsPreparing = true
-        setAudioPlaybackState(STATE_PREPARE)
-        playExoPlayer(audioUrlList[audioPosition])
-    }
-    
-    private fun playAyatAudio(selectedPosition: Int) {
+
+    private fun requestToPlayAudio(
+        selectedPosition: Int,
+        isSurahAudioPreparing: Boolean = false
+    ) {
         audioPosition = selectedPosition
-        isSurahAudioPlaying = false
         audioIsPreparing = true
+        isSurahAudio = isSurahAudioPreparing
+        setAudioPlaybackState(STATE_IDLE)
+        viewModel.setPreparingAudioDebounced(true)
+    }
+
+    private fun prepareAudio() {
         setAudioPlaybackState(STATE_PREPARE)
         playExoPlayer(audioUrlList[audioPosition])
     }
 
-    private fun stopAllAudio() {
-        if (audioIsPreparing) {
-            exoPlayer?.release()
-        }
+    private fun stopAudio() {
         stopExoPlayer()
         setAudioPlaybackState(STATE_IDLE)
         audioIsPreparing = false
-        isSurahAudioPlaying = false
+        isSurahAudio = false
+        audioPosition = 0
+    }
+
+    private fun resetAudio() {
+        if (audioIsPreparing) {
+            audioIsPreparing = false
+            exoPlayer?.release()
+        }
+        setAudioPlaybackState(STATE_IDLE)
+        isSurahAudio = false
         audioPosition = 0
     }
 
@@ -207,19 +239,20 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private val eventListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
-            if (playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true) {
+            audioIsPlaying = playbackState == Player.STATE_READY
+            if (playbackState == Player.STATE_READY) {
                 audioIsPreparing = false
-                audioIsPlaying = true
                 setAudioPlaybackState(STATE_PLAY)
             }
 
             if (playbackState == Player.STATE_ENDED) {
                 when {
-                    isSurahAudioPlaying && audioPosition < audioUrlList.size - 1 -> {
+                    isSurahAudio && audioPosition < audioUrlList.size - 1 -> {
                         audioPosition++
                         playExoPlayer(audioUrlList[audioPosition])
                     }
-                    else -> stopAllAudio()
+
+                    else -> stopAudio()
                 }
             }
         }
@@ -227,7 +260,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         override fun onPlayerError(error: PlaybackException) {
             exoPlayer?.release()
             setAudioPlaybackState(STATE_IDLE)
-            isSurahAudioPlaying = false
+            isSurahAudio = false
             audioPosition = 0
             Toast.makeText(
                 this@DetailSurahActivity,
@@ -243,7 +276,8 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private fun setAudioPlaybackState(state: Int) {
         with(binding) {
-            if (isSurahAudioPlaying) {
+            if (isSurahAudio) {
+                ayatAdapter.setPlaybackState(STATE_IDLE)
                 if (state != STATE_PREPARE) {
                     piLoading.hide()
                     ivSurahAudio.apply {
@@ -261,7 +295,6 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
                         isIndeterminate = true
                     }
                 }
-                ayatAdapter.setPlaybackState(STATE_IDLE)
             } else {
                 ayatAdapter.setPlaybackState(state, audioPosition)
                 ivSurahAudio.apply {

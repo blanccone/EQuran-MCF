@@ -76,7 +76,12 @@ class DaftarAyatTersimpanAdapter(
                 onItemPlayListener?.let { play ->
                     play(position)
                 }
-                setPlaybackState(STATE_PREPARE, position)
+            }
+
+            piLoading.setOnClickListener {
+                onItemPlayListener?.let { play ->
+                    play(position)
+                }
             }
 
             ivDelete.setOnClickListener {

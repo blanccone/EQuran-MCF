@@ -44,6 +44,16 @@ class EQuranViewModel @Inject constructor(
         }
     }
 
+    private val _isAudioPreparing = LiveEvent<Boolean?>()
+    val isAudioPreparing: LiveData<Boolean?> = _isAudioPreparing
+    fun setPreparingAudioDebounced(isPreparing: Boolean) {
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(debounceDuration)
+            _isAudioPreparing.postValue(isPreparing)
+        }
+    }
+
     private val _daftarSurah = LiveEvent<DaftarSurah>()
     val daftarSurah: LiveData<DaftarSurah> = _daftarSurah
     fun getDaftarSurah() = viewModelScope.launch {
