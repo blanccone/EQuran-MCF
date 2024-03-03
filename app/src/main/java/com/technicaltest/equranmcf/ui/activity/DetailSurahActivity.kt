@@ -42,6 +42,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private val audioUrlList = arrayListOf<String>()
     private var audioPosition = 0
+    private var audioIsPreparing = false
     private var audioIsPlaying = false
     private var isSurahAudioPlaying = false
 
@@ -166,6 +167,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     private fun playSurahAudio() {
         audioPosition = 0
         isSurahAudioPlaying = true
+        audioIsPreparing = true
         setAudioPlaybackState(STATE_PREPARE)
         playExoPlayer(audioUrlList[audioPosition])
     }
@@ -173,6 +175,7 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     private fun playAyatAudio(selectedPosition: Int) {
         audioPosition = selectedPosition
         isSurahAudioPlaying = false
+        audioIsPreparing = true
         setAudioPlaybackState(STATE_PREPARE)
         playExoPlayer(audioUrlList[audioPosition])
     }
@@ -182,6 +185,10 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         setAudioPlaybackState(STATE_IDLE)
         isSurahAudioPlaying = false
         audioPosition = 0
+        if (audioIsPreparing) {
+            audioIsPreparing = false
+            exoPlayer?.release()
+        }
     }
 
     private fun playExoPlayer(audioUrl: String) {
@@ -200,9 +207,9 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private val eventListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
-            audioIsPlaying = playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true
-
-            if (playbackState == Player.STATE_READY) {
+            if (playbackState == Player.STATE_READY && exoPlayer?.playWhenReady == true) {
+                audioIsPreparing = false
+                audioIsPlaying = true
                 setAudioPlaybackState(STATE_PLAY)
             }
 
