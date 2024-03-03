@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -15,14 +17,18 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.technicaltest.core.model.remote.daftarsurah.Data
 import com.technicaltest.core.model.remote.detailsurah.Ayat
 import com.technicaltest.core.ui.activity.CoreActivity
 import com.technicaltest.core.ui.widget.LoadingDialog
+import com.technicaltest.core.util.ViewUtils.hide
 import com.technicaltest.core.util.ViewUtils.invisible
 import com.technicaltest.core.util.ViewUtils.show
 import com.technicaltest.equranmcf.R
 import com.technicaltest.equranmcf.databinding.ActivityDetailSurahBinding
+import com.technicaltest.equranmcf.databinding.BottomSheetDialogDaftarTafsirBinding
 import com.technicaltest.equranmcf.ui.adapter.DaftarAyatAdapter
 import com.technicaltest.equranmcf.ui.adapter.DaftarTafsirAdapter
 import com.technicaltest.equranmcf.ui.viewmodel.EQuranViewModel
@@ -72,21 +78,48 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
 
     private fun setView() {
         with(binding) {
-            rvAyat.adapter = ayatAdapter
-            rvTafsir.adapter = tafsirAdapter
             tvSurahNamaLatin.text = surah?.namaLatin
             tvSurahArti.text = "${surah?.tempatTurun} - ${surah?.arti}"
+            rvAyat.adapter = ayatAdapter
+            layoutBottomSheet.rvTafsir.adapter = tafsirAdapter
 
-            bottomSheet = llBottomSheetTafsir
+            bottomSheet = layoutBottomSheet.llBottomSheetTafsir
             bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+            bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        viewDimmedOverlay.hide()
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    viewDimmedOverlay.alpha = slideOffset
+                }
+            })
         }
     }
 
     private fun setEvent() {
         with(binding) {
             ivBack.setOnClickListener {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    return@setOnClickListener
+                }
                 onBackPressedDispatcher.onBackPressed()
+            }
+
+            tbDaftarSurah.setOnClickListener {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    return@setOnClickListener
+                }
+            }
+
+            viewDimmedOverlay.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                return@setOnClickListener
             }
 
             cvShowTafsir.setOnClickListener {
@@ -166,8 +199,8 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
         viewModel.detailTafsir.observe(this) {
             it.data.tafsir?.let { tafsirList ->
                 bottomSheetBehavior.apply {
-                    isFitToContents = true
                     state = BottomSheetBehavior.STATE_EXPANDED
+                    binding.viewDimmedOverlay.show()
                 }
                 tafsirAdapter.submitData(tafsirList)
             }

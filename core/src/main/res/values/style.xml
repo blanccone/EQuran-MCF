@@ -64,8 +64,8 @@
 
     <style name="ModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/img_shapeable_background_top_corner</item>
+        <item name="android:backgroundTint">@color/color_background</item>
     </style>
-
     <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="theme">@style/MainTheme</item>
         <item name="bottomSheetStyle">@style/ModalStyle</item>
