@@ -21,6 +21,7 @@ class DaftarAyatTersimpanAdapter(
 
     companion object {
         private const val STATE_PREPARE = 2000
+        private const val STATE_IDLE = 3000
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,22 +42,24 @@ class DaftarAyatTersimpanAdapter(
             tvArab.text = ayat.teksArab
             tvLatin.text = ayat.teksLatin
             tvIndonesia.text = ayat.teksIndonesia
-            if (audioPlayingPosition == position) {
-                if (playbackState != STATE_PREPARE) {
-                    piLoading.hide()
-                    ivPlay.apply {
-                        show()
-                        background = ContextCompat.getDrawable(
-                            root.context,
-                            R.drawable.ic_pause_item
-                        )
+            if (playbackState != STATE_IDLE) {
+                if (audioPlayingPosition == position) {
+                    if (playbackState != STATE_PREPARE) {
+                        piLoading.hide()
+                        ivPlay.apply {
+                            show()
+                            background = ContextCompat.getDrawable(
+                                root.context,
+                                R.drawable.ic_pause_item
+                            )
+                        }
+                    } else {
+                        piLoading.apply {
+                            show()
+                            isIndeterminate = true
+                        }
+                        ivPlay.invisible()
                     }
-                } else {
-                    piLoading.apply {
-                        show()
-                        isIndeterminate = true
-                    }
-                    ivPlay.invisible()
                 }
             } else {
                 ivPlay.apply {

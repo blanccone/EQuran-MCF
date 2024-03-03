@@ -2,12 +2,9 @@ package com.technicaltest.equranmcf.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.exoplayer2.ExoPlayer
@@ -30,7 +27,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
     private val viewModel: EQuranViewModel by viewModels()
     private val adapter by lazy { DaftarAyatTersimpanAdapter() }
     private var exoPlayer: ExoPlayer? = null
-    
+
     private val daftarAyat = arrayListOf<AyatData>()
     private var audioIsPlaying = false
     private var audioPosition = 0
@@ -69,16 +66,14 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
         with(adapter) {
             setOnItemPlayListener {
                 when {
-                    !audioIsPlaying -> {
-                        audioPosition = it
-                        playExoPlayer(daftarAyat[it].audio)
-                    }
+                    !audioIsPlaying -> playAyatAudio(it)
+
                     audioIsPlaying && audioPosition != it -> {
                         stopExoPlayer()
-                        audioPosition = it
-                        playExoPlayer(daftarAyat[it].audio)
+                        playAyatAudio(it)
                     }
-                    else -> stopExoPlayer()
+
+                    else -> stopAyatAudio()
                 }
             }
             setOnItemDeleteListener {
@@ -124,6 +119,17 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
                 adapter.deleteData(ayatData)
             }
         }
+    }
+
+    private fun playAyatAudio(selectedPosition: Int) {
+        audioPosition = selectedPosition
+        adapter.setPlaybackState(STATE_PREPARE)
+        playExoPlayer(daftarAyat[audioPosition].audio)
+    }
+
+    private fun stopAyatAudio() {
+        stopExoPlayer()
+        adapter.setPlaybackState(STATE_IDLE)
     }
 
     private fun playExoPlayer(audioUrl: String) {
@@ -182,6 +188,7 @@ class DaftarAyatTersimpanActivity : CoreActivity<ActivityDaftarAyatTersimpanBind
 
     companion object {
         private const val STATE_PLAY = 1000
+        private const val STATE_PREPARE = 2000
         private const val STATE_IDLE = 3000
 
         fun newInstance(context: Context) {
