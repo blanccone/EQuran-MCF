@@ -181,14 +181,14 @@ class DetailSurahActivity : CoreActivity<ActivityDetailSurahBinding>() {
     }
 
     private fun stopAllAudio() {
-        stopExoPlayer()
-        setAudioPlaybackState(STATE_IDLE)
-        isSurahAudioPlaying = false
-        audioPosition = 0
         if (audioIsPreparing) {
-            audioIsPreparing = false
             exoPlayer?.release()
         }
+        stopExoPlayer()
+        setAudioPlaybackState(STATE_IDLE)
+        audioIsPreparing = false
+        isSurahAudioPlaying = false
+        audioPosition = 0
     }
 
     private fun playExoPlayer(audioUrl: String) {
